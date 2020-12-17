@@ -1,0 +1,24 @@
+<h1>Tamagotchi Details: </h1>
+
+<h2>@Model.Name</h2>
+
+<h2>@Model.Hunger</h2>
+<h2>@Model.Happiness</h2>
+<h2>@Model.Fatigue</h2>
+<p>-@Model.HungerStatus</p>
+<p>-@Model.HappinessStatus</p>
+<p>-@Model.FatigueStatus</p>
+<br>
+<form id="feed" action= @Model.Feed() method="post">
+  <button id="feedbutton" type="submit">FEED ME!</button>
+</form>
+<form id="play" action= @Model.Play() method="post">
+  <button id="playbutton" type="submit">PLAY WITH ME!</button>
+</form>
+<form id="sleep" action= @Model.Sleep() method="post">
+  <button id="sleepbutton" type="submit">TUCK ME IN!</button>
+</form>
+
+
+<a href="/tamagotchi/new">Add another Tamagotchi</a>
+<a href="/tamagotchi">View all your Tamagotchis</a>
