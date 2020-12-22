@@ -31,7 +31,7 @@ namespace Game.Models
 
     public Tamagotchi(string name, int id)
     {
-      // overload constructor
+      // overload constructor!
       Name = name;
       Id = id;
     }
