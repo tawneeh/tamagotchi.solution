@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MySql.Data.MySqlClient;
 
 namespace Game.Models
 {
@@ -7,7 +8,7 @@ namespace Game.Models
   {
 
     public string Name { get; set; }
-    public int Id { get; }
+    public int Id { get; set; }
     public int Hunger { get; set; }
     public int Happiness { get; set; }
     public int Fatigue { get; set; }
@@ -15,7 +16,7 @@ namespace Game.Models
     public string HappinessStatus { get; set; }
     public string FatigueStatus { get; set; }
 
-    private static List<Tamagotchi> _instances = new List<Tamagotchi> { }; 
+
 
     public Tamagotchi(string name)
     {
@@ -26,22 +27,79 @@ namespace Game.Models
       HungerStatus = "Full";
       HappinessStatus = "Very Happy";
       FatigueStatus = "Well Rested";
-      _instances.Add(this);
-      Id = _instances.Count;
+    }
+
+    public Tamagotchi(string name, int id)
+    {
+      // overload constructor
+      Name = name;
+      Id = id;
     }
 
     public static List<Tamagotchi> GetAll()
     {
-      return _instances;
+      List<Tamagotchi> allTamagotchis = new List<Tamagotchi> { };
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT * FROM tamagotchi;";
+      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+      while (rdr.Read())
+      {
+        int TamagotchiId = rdr.GetInt32(1);
+        string TamagotchiName = rdr.GetString(0);
+        Tamagotchi newTamagotchi = new Tamagotchi(TamagotchiName, TamagotchiId);
+        allTamagotchis.Add(newTamagotchi);
+      }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return allTamagotchis;
     }
     public static Tamagotchi Find(int searchId)
     {
-      return _instances[searchId-1];
+      Tamagotchi placeholderTamagotchi = new Tamagotchi("placeholder Tamagotchi");
+      return placeholderTamagotchi;
     }
+
+    public static void ClearAll()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"DELETE FROM tamagotchi;";
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+    }
+    public void Save()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"INSERT INTO tamagotchi (name) VALUES (@TamagotchiName);";
+      MySqlParameter name = new MySqlParameter();
+      name.ParameterName = "@TamagotchiName";
+      name.Value = this.Name;
+      cmd.Parameters.Add(name);    
+      cmd.ExecuteNonQuery();
+      Id = (int) cmd.LastInsertedId;
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+    }
+
+
     public int Feed()
     {
       return Hunger = 10;
-      
     }
 
     public int Sleep()

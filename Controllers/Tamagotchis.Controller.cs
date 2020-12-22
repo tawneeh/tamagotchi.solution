@@ -21,9 +21,10 @@ namespace Game.Controllers
     }
 
     [HttpPost("/tamagotchi")]
-    public ActionResult Create(string name)
+    public ActionResult Create(string name) // change this argument?? int id
     { 
       Tamagotchi myTamagotchi = new Tamagotchi(name);
+      myTamagotchi.Save();
       return RedirectToAction("Index");
     }
 
